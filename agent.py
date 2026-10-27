@@ -1,9 +1,19 @@
+import os
+
 import openai
 from arize.otel import register
 from dotenv import load_dotenv
 from openinference.instrumentation.openai import OpenAIInstrumentor
 
 load_dotenv()  # must run before openai.OpenAI()
+
+
+tracer_provider = register(
+    space_id=os.environ["ARIZE_SPACE_ID"],
+    api_key=os.environ["ARIZE_API_KEY"],
+    project_name="simple-project",
+)
+OpenAIInstrumentor().instrument(tracer_provider=tracer_provider)
 
 
 #Set up the client to read 
@@ -18,10 +28,3 @@ response = client.responses.create(
 
 print(response.output_text)
 
-
-tracer_provider = register(
-    space_id=os.environ["ARIZE_SPACE_ID"],
-    api_key=os.environ["ARIZE_API_KEY"],
-    project_name="simple-project",
-)
-OpenAIInstrumentor().instrument(tracer_provider=tracer_provider)
